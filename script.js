@@ -29,14 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
-        
-        /* 修改說明：除錯監控 */
-        /* 如果數值異常（例如超過 720），在 Console 印出追蹤路徑 */
-        if (Math.abs(v) > 720) {
-            console.warn("偵測到異常數值輸入:", v);
-            console.trace(); // 這會告訴你是誰傳了這個數字進來
-        }
-
         if (v > 720) v = 720;
         if (v < -720) v = -720;
         
@@ -97,28 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
 
-        /* 修改說明：屬性防禦邏輯 */
-        /* 如果 min/max 被任何外部力量改掉，每幀都強行修正回來 */
-        if (sSlider.max !== "720") sSlider.max = "720";
-        if (sSlider.min !== "-720") sSlider.min = "-720";
-
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
-            
-            /* 修改說明：防止角度溢出 */
-            /* 雖然這不直接導致 2000，但角度過大會造成 transform 渲染壓力 */
             currentAngle %= 360; 
-
             outer.style.transform = `rotate(${currentAngle}deg)`;
-            
-            if (isNested) {
+        if (isNested) {
                 inner.style.transform = `rotate(0deg)`;
-            } else {
+         } else {
                 inner.style.transform = `rotate(${-currentAngle}deg)`;
             }
             
             velocity *= Math.pow(friction, deltaTime * 60);
-            
             sDisplay.innerText = Math.round(Math.abs(velocity));
 
             if (document.activeElement !== sSlider && document.activeElement !== sInput) {
