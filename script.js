@@ -76,23 +76,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 5. Animation Looping
+// 5. Animation Looping
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
-
+        if (sSlider.max !== "720") sSlider.max = "720";
+        if (sSlider.min !== "-720") sSlider.min = "-720";
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
-            outer.style.transform = `rotate(${currentAngle}deg)`;
-            
-            if (isNested) {
-                inner.style.transform = `rotate(0deg)`;
-            } else {
-                inner.style.transform = `rotate(${-currentAngle}deg)`;
-            }
-            
-            velocity *= Math.pow(friction, deltaTime * 60);
-            
+            currentAngle %= 360; 
+            outer.style.transform = `rotate(${currentAngle}deg)`;    
+            inner.style.transform = `rotate(${-currentAngle}deg)`;   
+            velocity *= Math.pow(friction, deltaTime * 60);   
             sDisplay.innerText = Math.round(Math.abs(velocity));
             if (document.activeElement !== sInput && document.activeElement !== sSlider) {
                 sInput.value = Math.round(velocity);
@@ -101,6 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (velocity !== 0) {
             velocity = 0;
             sDisplay.innerText = 0;
+            sInput.value = 0;
+            sSlider.value = 0;
         }
 
         if (velocity > 0) {
@@ -110,8 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         requestAnimationFrame(update);
-    }
-    requestAnimationFrame(update);
+    };
 
     // 6. Bonus 關閉邏輯封裝
     function closeBonus() {
