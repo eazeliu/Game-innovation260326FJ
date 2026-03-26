@@ -21,13 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let bonusTimer = null;
     const friction = 0.998; 
 
-    // set-default-controller
     sSlider.min = "-720";
     sSlider.max = "720";
     sInput.min = "-720";
     sInput.max = "720";
-
-    // Helper: 
+    
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
         if (v > 720) v = 720;
@@ -153,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
             closeBonus();
             return;
         }
+
+        // --- 啟動播放 ---
         bonusVideo.style.display = 'block';
         bonusVideo.play().catch(e => console.log("Autoplay blocked"));
         
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             v.play().catch(e => console.log("Assign video blocked"));
             setTimeout(() => v.classList.add('active'), 10);
         });
-        
+
         setTimeout(() => {
             bonusVideo.classList.add('active');
             bonusVideo.style.opacity = "1";
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bonusTimer = setTimeout(() => {
             closeBonus();
-        }, 6000);
+        },6000);
     };
 
     // FPS Detector
