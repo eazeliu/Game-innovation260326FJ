@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isNested = false;
     let lastTime = performance.now();
     let bonusTimer = null;
-    const friction = 0.998;
+    const friction = 0.985;
     const MIN_SPEED = -720;
     const MAX_SPEED = 720;
 
