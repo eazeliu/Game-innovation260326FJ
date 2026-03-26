@@ -10,7 +10,6 @@ body {
     overflow: hidden;
 }
 
-/* Wheel - Container*/
 #canvas-container {
     position: relative;
     width: 800px;
@@ -21,7 +20,6 @@ body {
     overflow: hidden;
 }
 
-/* Wheel - Outer*/
 #outer-wheel {
     position: absolute;
     width: 800px;
@@ -53,13 +51,13 @@ body {
     top: 50%;      
     left: 50%;     
     transform-origin: center center; 
-    
     display: none;
     opacity: 0;
     transition: transform 1000ms ease-in-out, opacity 1000ms ease-in-out;
     z-index: 1002;
     pointer-events: none;
 }
+
 .v-12 { transform: translate(-50%, -50%) rotate(39.96deg)   translateY(-310px); }
 .v-3  { transform: translate(-50%, -50%) rotate(119.88deg)  translateY(-310px); }
 .v-5  { transform: translate(-50%, -50%) rotate(199.85deg) translateY(-310px); }
@@ -70,7 +68,6 @@ body {
     opacity: 1;
 }
 
-/* Wheel - Inner (Updated for Video) */
 #inner-panel {
     position: absolute;
     width: 600px;
@@ -85,7 +82,6 @@ body {
     overflow: hidden; 
 }
 
-/* Video */
 .inner-video {
     position: absolute;
     top: 0;
@@ -113,7 +109,6 @@ body {
     left: 100px;
 }
 
-.arrow { font-size: 24px; color: #ff0000; filter: drop-shadow(0 0 10px rgba(0,0,0,0.3)); }
 .text {
     position: relative;
     font-size: 72px;
@@ -121,14 +116,7 @@ body {
     text-transform: uppercase;
     font-family: 'Arial Black', Gadget, sans-serif;
     color: transparent;
-    background: linear-gradient(
-        to bottom,
-        #BF953F 0%,
-        #FCF6BA 25%,
-        #B38728 50%,
-        #FBF5B7 75%,
-        #AA771C 100%
-    );
+    background: linear-gradient(to bottom, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
     background-clip: text;
     -webkit-background-clip: text;
     display: inline-block;
@@ -146,17 +134,10 @@ body {
 }
 
 @keyframes gold-breath {
-    0%, 100% {
-        transform: scale(1);
-        filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3)) brightness(1);
-    }
-    50% {
-        transform: scale(1.1);
-        filter: drop-shadow(0 0 20px rgba(135, 206, 250, 0.9)) brightness(1.2);
-    }
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3)) brightness(1); }
+    50% { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(135, 206, 250, 0.9)) brightness(1.2); }
 }
 
-/* UI Panel - Container */
 .ui-overlay {
     position: fixed;
     top: 20px;
@@ -169,7 +150,6 @@ body {
     width: 350px;
 }
 
-/*bonus-animations*/
 #bonus-bg {
     width: 800px;
     height: 800px;
@@ -178,16 +158,13 @@ body {
     top: 50%;
     z-index: 992;
     opacity: 0;
-    transform: scale(0);
+    transform: translate(-50%, -50%) scale(0);
     transition: transform 1000ms ease-in-out, opacity 1000ms ease-in-out;
     display: none;    
     pointer-events: none; 
 }
-#bonus-bg.active {
-    opacity: 1;
-    transform: scale(1);
-    display: block;
-}
+
+#bonus-bg.active { opacity: 1; transform: translate(-50%, -50%) scale(1); display: block; }
 
 .control-row { margin: 4px; }
 input[type="number"] { width: 60px; padding: 4px; }
@@ -196,15 +173,9 @@ button { cursor: pointer; padding: 5px 10px; border-radius: 4px; border: 1px sol
 .btn-stop { background: #6c757d; color: white; border: none; }
 .btn-reset { background: #5A3737; color: white; border: none; }
 .btn-mode { background: #007bff; color: white; border: none; width: 100%; margin-top: 5px; }
-#bonusTrigger { background: #ffbf3e; color: white; border: none; width: 100%; margin-top: 5px; height: 32px; }
+#bonusTrigger { background: #28a745; color: white; border: none; width: 100%; margin-top: 5px; height: 32px; }
 .status-info { border-top: 1px solid #ddd; padding-top: 8px; font-family: monospace; font-size: 16px; display: inline-block; width: 49%; vertical-align: top; }
 
-/* Speed Slider */
 input[type="range"] { cursor: pointer; }
-#speedSlider {
-    accent-color: #ff4444; 
-    transition: accent-color 0.2s ease;
-}
-.slider-red {
-    accent-color: #28a745 !important;
-}
+#speedSlider { accent-color: #ff4444; transition: accent-color 0.2s ease; }
+.slider-red { accent-color: #28a745 !important; }
