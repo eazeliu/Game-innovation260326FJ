@@ -23,21 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const MIN_SPEED = -720;
     const MAX_SPEED = 720;
 
-    sSlider.min - String(MIN_SEPPD);
-    sSlider.max - String(MAX_SEPPD);
-    sInput.min - String(MIN_SPEED);
-    sInput.max - String(MAX_SPEED);
+    sSlider.min = String(MIN_SPEED);
+    sSlider.max = String(MAX_SPEED);
+    sInput.min = String(MIN_SPEED);
+    sInput.max = String(MAX_SPEED);
 
-    // 1. Set Limit
-    velocity = v;
-    sInput.value = Math.round(v);
-    sSlider.value = v;
-    
-    function limitAndSync(val) {
-        let v = parseFloat(val) || 0;
-        if (v > 720) v = 720;
-        if (v < -720) v = -720;
+    function clampSpeed(val) {
+        const parsed = Number.parseFloat(val);
+        if (Number.isNaN(parsed)) {
+            return 0;
+        }
+
+        return Math.min(MAX_SPEED, Math.max(MIN_SPEED, parsed));
     }
+
+    function syncSpeedUI(val) {
+        const rounded = Math.round(val);
+        sInput.value = rounded;
+        sSlider.value = val;
+        sDisplay.innerText = rounded;
+    }
+
+    function limitAndSync(val) {
+        const nextVelocity = clampSpeed(val);
+        velocity = nextVelocity;
+        syncSpeedUI(nextVelocity);
+    }
+
+    syncSpeedUI(velocity);
 
     sSlider.addEventListener('input', (e) => {
         limitAndSync(e.target.value);
@@ -54,21 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     stopBtn.onclick = () => {
-        velocity = 0;
-        sSlider.value = 0;
-        sInput.value = 0;
-        sDisplay.innerText = 0;
+        limitAndSync(0);
         sSlider.classList.remove('slider-red');
     };
 
     resetBtn.onclick = () => {
-        velocity = 0;          
-        currentAngle = 0;   
+        currentAngle = 0;
         outer.style.transform = `rotate(0deg)`;
         inner.style.transform = `rotate(0deg)`;
-        sSlider.value = 0;
-        sInput.value = 0;
-        sDisplay.innerText = 0;
+        limitAndSync(0);
         sSlider.classList.remove('slider-red');
     };
 
@@ -102,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             velocity *= Math.pow(friction, deltaTime * 60);
-            sDisplay.innerText = Math.round(Math.abs(velocity));
+            sDisplay.innerText = Math.round(velocity);
 
             if (document.activeElement !== sSlider && document.activeElement !== sInput) {
                 sInput.value = Math.round(velocity);
