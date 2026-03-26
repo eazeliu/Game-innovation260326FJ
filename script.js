@@ -17,32 +17,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAngle = 0;
     let velocity = 0;
     let isNested = false;
+    const friction = 0.998;
     let lastTime = performance.now();
-    let bonusTimer = null;
-    const friction = 0.998; 
+    let bonusTimer = null; // 用於自動關閉計時
 
-    // 新增：限制與同步函數
-    function syncSpeed(val) {
-        let cleanVal = Math.min(Math.max(parseFloat(val) || 0, -720), 720);
-        velocity = cleanVal;
-        sInput.value = Math.round(cleanVal);
-        sSlider.value = cleanVal;
-    }
+    // 初始化狀態
+    bonusVideo.style.display = 'none';
+    bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
 
+    // 1. UI-Slider Control
     sSlider.addEventListener('input', (e) => {
-        syncSpeed(e.target.value);
+        velocity = parseFloat(e.target.value);
+        sInput.value = Math.round(velocity); 
     });
 
     // 2. UI : Sync Speed from Input
     sInput.addEventListener('change', (e) => {
-        syncSpeed(e.target.value);
+        const val = parseFloat(e.target.value) || 0;
+        velocity = val;
+        sSlider.value = val;
     });
 
     // 3. Button-Click Logic
     startBtn.onclick = () => {
-        syncSpeed(sInput.value);
+        velocity = parseFloat(sInput.value) || 0;
+        sSlider.value = velocity;
     };
-
+    
     stopBtn.onclick = () => {
         velocity = 0;
         sSlider.value = 0;
@@ -76,28 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-// 5. Animation Looping
+    // 5. Animation Looping
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
-        if (sSlider.max !== "720") sSlider.max = "720";
-        if (sSlider.min !== "-720") sSlider.min = "-720";
+
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
-            currentAngle %= 360; 
-            outer.style.transform = `rotate(${currentAngle}deg)`;    
-            inner.style.transform = `rotate(${-currentAngle}deg)`;   
-            velocity *= Math.pow(friction, deltaTime * 60);   
-            sDisplay.innerText = Math.round(Math.abs(velocity));
-            if (document.activeElement !== sInput && document.activeElement !== sSlider) {
-                sInput.value = Math.round(velocity);
-                sSlider.value = velocity;
-            }
+            outer.style.transform = `rotate(${currentAngle}deg)`;
+            inner.style.transform = `rotate(${-currentAngle}deg)`;
+            velocity *= Math.pow(friction, deltaTime * 60);
+            
+            sDisplay.innerText = Math.round(velocity);
+            sInput.value = Math.round(velocity);
+            sSlider.value = velocity;
         } else if (velocity !== 0) {
             velocity = 0;
             sDisplay.innerText = 0;
-            sInput.value = 0;
-            sSlider.value = 0;
         }
 
         if (velocity > 0) {
@@ -107,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         requestAnimationFrame(update);
-    };
+    }
+    requestAnimationFrame(update);
 
     // 6. Bonus 關閉邏輯封裝
     function closeBonus() {
@@ -137,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bonusTrigger.onclick = () => {
         // 如果已經在跑，按一下就關閉
         if (bonusVideo.classList.contains('active')) {
-            if (bonusTimer) clearTimeout(bonusTimer);
+            clearTimeout(bonusTimer);
             closeBonus();
             return;
         }
