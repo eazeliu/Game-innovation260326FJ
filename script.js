@@ -86,9 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
-
+        if (sSlider.max !== "720") sSlider.max = "720";
+        if (sSlider.min !== "-720") sSlider.min = "-720";
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
+            
+            currentAngle %= 360; 
+
             outer.style.transform = `rotate(${currentAngle}deg)`;
             
             if (isNested) {
