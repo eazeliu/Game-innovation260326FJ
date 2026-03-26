@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // DOM 元素引用
     const container = document.getElementById('canvas-container');
     const outer = document.getElementById('outer-wheel');
     const inner = document.getElementById('inner-panel');
@@ -14,192 +15,136 @@ document.addEventListener('DOMContentLoaded', () => {
     const bonusTrigger = document.getElementById('bonusTrigger');
     const bonusAssignVideos = document.querySelectorAll('.bonus-assign');
 
+    // Variant
     let currentAngle = 0;
     let velocity = 0;
     let isNested = false;
     let lastTime = performance.now();
     let bonusTimer = null;
-    const friction = 0.985;
-    const MIN_SPEED = -720;
-    const MAX_SPEED = 720;
+    const friction = 0.998; 
 
-    // 修改說明：初始化鎖定，防止 2000 出現
-    sSlider.min = String(MIN_SPEED);
-    sSlider.max = String(MAX_SPEED);
-    sInput.min = String(MIN_SPEED);
-    sInput.max = String(MAX_SPEED);
-
-    function clampSpeed(val) {
-        const parsed = Number.parseFloat(val);
-        if (Number.isNaN(parsed)) return 0;
-        return Math.min(MAX_SPEED, Math.max(MIN_SPEED, parsed));
-    }
-
-    function syncSpeedUI(val) {
-        const rounded = Math.round(val);
-        sInput.value = rounded;
-        sSlider.value = val;
-        sDisplay.innerText = Math.abs(rounded); // 顯示絕對值
-    }
-
-    function limitAndSync(val) {
-        const nextVelocity = clampSpeed(val);
-        velocity = nextVelocity;
-        syncSpeedUI(nextVelocity);
-    }
-
-    syncSpeedUI(velocity);
-
+    // 1.Control
     sSlider.addEventListener('input', (e) => {
-        limitAndSync(e.target.value);
+        velocity = parseFloat(e.target.value);
+        sInput.value = Math.round(velocity);
     });
 
-    // 2. UI : Sync Speed from Input
     sInput.addEventListener('change', (e) => {
-        limitAndSync(e.target.value);
+        let val = Math.min(Math.max(parseFloat(e.target.value) || 0, -720), 720);
+        velocity = val;
+        sInput.value = val;
+        sSlider.value = val;
     });
 
-    // 3. Button-Click Logic
+    // 2. Button
     startBtn.onclick = () => {
-        limitAndSync(sInput.value);
+        velocity = Math.min(Math.max(parseFloat(sInput.value) || 0, -720), 720);
+        sSlider.value = velocity;
     };
-    
+
     stopBtn.onclick = () => {
-        limitAndSync(0);
-        sSlider.classList.remove('slider-red');
+        velocity = 0;
+        updateUISpeed(0);
     };
 
     resetBtn.onclick = () => {
+        velocity = 0;
         currentAngle = 0;
         outer.style.transform = `rotate(0deg)`;
         inner.style.transform = `rotate(0deg)`;
-        limitAndSync(0);
-        sSlider.classList.remove('slider-red');
+        updateUISpeed(0);
     };
 
-    // 4. Switch Mode
     nestBtn.addEventListener('click', () => {
         isNested = !isNested;
         if (isNested) {
-            outer.appendChild(inner);
-            nestBtn.innerText = 'Switch to「Unnested」';
-            modeText.innerText = 'Mode：巢狀 (Nested)';
+            outer.appendChild(inner); 
+            nestBtn.innerText = 'Switch to Unnested';
+            modeText.innerText = 'Mode：Nested (巢狀)';
         } else {
-            container.appendChild(inner);
-            nestBtn.innerText = 'Switch to 「Nested」';
-            modeText.innerText = 'Mode：獨立 (Unnested)';
+            container.appendChild(inner); 
+            nestBtn.innerText = 'Switch to Nested';
+            modeText.innerText = 'Mode：Unnested (獨立)';
         }
-        // 修改說明：切換模式時立即強制重繪一次轉向
-        applyRotation();
     });
 
-    // 修改說明：封裝旋轉套用邏輯
-    function applyRotation() {
-        outer.style.transform = `rotate(${currentAngle}deg)`;
-        if (isNested) {
-            inner.style.transform = `rotate(0deg)`;
-        } else {
-            inner.style.transform = `rotate(${-currentAngle}deg)`;
-        }
-    }
-
-    // 5. Animation Looping
+    // 3. Animation
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
 
-        // 修改說明：強制校正 Inspector 可能出現的 2000 異常
-        if (sSlider.max !== "720") sSlider.max = "720";
-        if (sSlider.min !== "-720") sSlider.min = "-720";
-
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
-            currentAngle %= 360; 
             
-            applyRotation();
+            outer.style.transform = `rotate(${currentAngle}deg)`;
             
-            velocity *= Math.pow(friction, deltaTime * 60);
-            sDisplay.innerText = Math.round(Math.abs(velocity));
-
-            if (document.activeElement !== sSlider && document.activeElement !== sInput) {
-                sInput.value = Math.round(velocity);
-                sSlider.value = velocity;
+            if (!isNested) {
+                inner.style.transform = `rotate(${-currentAngle}deg)`; 
+            } else {
+                inner.style.transform = `rotate(0deg)`;
             }
+
+            velocity *= Math.pow(friction, deltaTime * 60);
+            updateUISpeed(velocity);
         } else if (velocity !== 0) {
             velocity = 0;
-            sDisplay.innerText = 0;
-            sInput.value = 0;
-            sSlider.value = 0;
-            applyRotation(); // 停止時確保最後位置精確
+            updateUISpeed(0);
         }
 
-        if (velocity > 0) {
-            sSlider.classList.add('slider-red');
-        } else {
-            sSlider.classList.remove('slider-red');
-        }
+        if (velocity > 0) sSlider.classList.add('slider-red');
+        else sSlider.classList.remove('slider-red');
 
         requestAnimationFrame(update);
     }
-    requestAnimationFrame(update);
 
-    // 6. Bonus 
+    function updateUISpeed(val) {
+        const rounded = Math.round(val);
+        sDisplay.innerText = Math.abs(rounded);
+        if (document.activeElement !== sInput) sInput.value = rounded;
+        if (document.activeElement !== sSlider) sSlider.value = val;
+    }
+
+    // 4. Bonus
     function closeBonus() {
-        bonusVideo.style.opacity = "0";
-        bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
         bonusVideo.classList.remove('active');
-
-        bonusAssignVideos.forEach(v => {
-            v.classList.remove('active'); 
-        });
+        bonusAssignVideos.forEach(v => v.classList.remove('active'));
 
         setTimeout(() => {
-            bonusVideo.style.display = 'none';
             bonusVideo.pause();
             bonusVideo.currentTime = 0;
             bonusAssignVideos.forEach(v => {
-                v.style.display = 'none';
                 v.pause();
                 v.currentTime = 0;
             });
             bonusTrigger.innerText = "BONUS";
-            bonusTrigger.style.background = "#28a745";
-        }, 1000); 
+            bonusTrigger.style.background = "#ffbf3e";
+        }, 1000);
     }
 
-    // 7. Bonus-trigger
     bonusTrigger.onclick = () => {
         if (bonusVideo.classList.contains('active')) {
-            if (bonusTimer) clearTimeout(bonusTimer);
+            clearTimeout(bonusTimer);
             closeBonus();
             return;
         }
 
-        bonusVideo.style.display = 'block';
-        bonusVideo.play().catch(e => console.log("Autoplay blocked"));
+
+        bonusVideo.classList.add('active');
+        bonusVideo.play().catch(() => {});
         
         bonusAssignVideos.forEach(v => {
-            v.style.display = 'block';
-            v.play().catch(e => console.log("Assign video blocked"));
-            setTimeout(() => v.classList.add('active'), 10);
+            v.classList.add('active');
+            v.play().catch(() => {});
         });
-
-        setTimeout(() => {
-            bonusVideo.classList.add('active');
-            bonusVideo.style.opacity = "1";
-            bonusVideo.style.transform = "translate(-50%, -50%) scale(1)";
-        }, 10);
 
         bonusTrigger.innerText = "RUNNING...";
         bonusTrigger.style.background = "#ff4444";
 
-        bonusTimer = setTimeout(() => {
-            closeBonus();
-        },6000);
+        bonusTimer = setTimeout(closeBonus, 5000);
     };
 
-    // FPS Detector
-    (function() {
+    // 5. FPS detect
+    (function initFPS() {
         let fLastTime = performance.now();
         let frameCount = 0;
         const fpsDisplay = document.getElementById('fpsDiv');
@@ -218,4 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         requestAnimationFrame(tick);
     })();
+
+    requestAnimationFrame(update);
 });
