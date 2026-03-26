@@ -19,16 +19,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let isNested = false;
     let lastTime = performance.now();
     let bonusTimer = null;
-    const friction = 0.998; 
+    const friction = 0.998;
+    const MIN_SPEED = -720;
+    const MAX_SPEED = 720;
+
+    sSlider.min - String(MIN_SEPPD);
+    sSlider.max - String(MAX_SEPPD);
+    sInput.min - String(MIN_SPEED);
+    sInput.max - String(MAX_SPEED);
 
     // 1. Set Limit
     velocity = v;
     sInput.value = Math.round(v);
     sSlider.value = v;
-    sSlider.setAttribute('min', '-720');
-    sSlider.setAttribute('max', '720');
-    sInput.setAttribute('min', '-720');
-    sInput.setAttribute('max', '720');
     
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
