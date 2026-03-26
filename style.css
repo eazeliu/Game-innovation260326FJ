@@ -182,7 +182,7 @@ body {
     background: rgba(0,0,0,0.75);
     padding: 16px;
     border-radius: 10px;
-    z-index: 999;
+    z-index: 9999;
     color: white;
     width: 350px;
 }
