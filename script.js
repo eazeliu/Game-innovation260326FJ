@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const MIN_SPEED = -720;
     const MAX_SPEED = 720;
 
+    // 修改說明：初始化鎖定，防止 2000 出現
     sSlider.min = String(MIN_SPEED);
     sSlider.max = String(MAX_SPEED);
     sInput.min = String(MIN_SPEED);
@@ -30,10 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function clampSpeed(val) {
         const parsed = Number.parseFloat(val);
-        if (Number.isNaN(parsed)) {
-            return 0;
-        }
-
+        if (Number.isNaN(parsed)) return 0;
         return Math.min(MAX_SPEED, Math.max(MIN_SPEED, parsed));
     }
 
@@ -41,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rounded = Math.round(val);
         sInput.value = rounded;
         sSlider.value = val;
-        sDisplay.innerText = rounded;
+        sDisplay.innerText = Math.abs(rounded); // 顯示絕對值
     }
 
     function limitAndSync(val) {
@@ -91,25 +89,37 @@ document.addEventListener('DOMContentLoaded', () => {
             nestBtn.innerText = 'Switch to 「Nested」';
             modeText.innerText = 'Mode：獨立 (Unnested)';
         }
+        // 修改說明：切換模式時立即強制重繪一次轉向
+        applyRotation();
     });
+
+    // 修改說明：封裝旋轉套用邏輯
+    function applyRotation() {
+        outer.style.transform = `rotate(${currentAngle}deg)`;
+        if (isNested) {
+            inner.style.transform = `rotate(0deg)`;
+        } else {
+            inner.style.transform = `rotate(${-currentAngle}deg)`;
+        }
+    }
 
     // 5. Animation Looping
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
 
+        // 修改說明：強制校正 Inspector 可能出現的 2000 異常
+        if (sSlider.max !== "720") sSlider.max = "720";
+        if (sSlider.min !== "-720") sSlider.min = "-720";
+
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
             currentAngle %= 360; 
-            outer.style.transform = `rotate(${currentAngle}deg)`;
-        if (isNested) {
-                inner.style.transform = `rotate(0deg)`;
-         } else {
-                inner.style.transform = `rotate(${-currentAngle}deg)`;
-            }
+            
+            applyRotation();
             
             velocity *= Math.pow(friction, deltaTime * 60);
-            sDisplay.innerText = Math.round(velocity);
+            sDisplay.innerText = Math.round(Math.abs(velocity));
 
             if (document.activeElement !== sSlider && document.activeElement !== sInput) {
                 sInput.value = Math.round(velocity);
@@ -118,9 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (velocity !== 0) {
             velocity = 0;
             sDisplay.innerText = 0;
-            /* 修改說明：歸零時同步確保 UI 數值正確 */
             sInput.value = 0;
             sSlider.value = 0;
+            applyRotation(); // 停止時確保最後位置精確
         }
 
         if (velocity > 0) {
