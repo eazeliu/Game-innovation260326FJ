@@ -21,21 +21,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let bonusTimer = null;
     const friction = 0.998; 
 
-    sSlider.min = "-720";
-    sSlider.max = "720";
-    sInput.min = "-720";
-    sInput.max = "720";
+    /* 修改說明：初始化時強制重寫屬性，確保 HTML 原始設定失效 */
+    sSlider.setAttribute('min', '-720');
+    sSlider.setAttribute('max', '720');
+    sInput.setAttribute('min', '-720');
+    sInput.setAttribute('max', '720');
     
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
+        
+        /* 修改說明：除錯監控 */
+        /* 如果數值異常（例如超過 720），在 Console 印出追蹤路徑 */
+        if (Math.abs(v) > 720) {
+            console.warn("偵測到異常數值輸入:", v);
+            console.trace(); // 這會告訴你是誰傳了這個數字進來
+        }
+
         if (v > 720) v = 720;
         if (v < -720) v = -720;
+        
         velocity = v;
         sInput.value = Math.round(v);
         sSlider.value = v;
     }
 
     sSlider.addEventListener('input', (e) => {
+        limitAndSync(e.target.value);
+    });
+
+    // 2. UI : Sync Speed from Input
+    sInput.addEventListener('change', (e) => {
         limitAndSync(e.target.value);
     });
 
@@ -81,11 +96,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function update(now) {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
+
+        /* 修改說明：屬性防禦邏輯 */
+        /* 如果 min/max 被任何外部力量改掉，每幀都強行修正回來 */
         if (sSlider.max !== "720") sSlider.max = "720";
         if (sSlider.min !== "-720") sSlider.min = "-720";
+
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
             
+            /* 修改說明：防止角度溢出 */
+            /* 雖然這不直接導致 2000，但角度過大會造成 transform 渲染壓力 */
             currentAngle %= 360; 
 
             outer.style.transform = `rotate(${currentAngle}deg)`;
@@ -107,6 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (velocity !== 0) {
             velocity = 0;
             sDisplay.innerText = 0;
+            /* 修改說明：歸零時同步確保 UI 數值正確 */
+            sInput.value = 0;
+            sSlider.value = 0;
         }
 
         if (velocity > 0) {
@@ -151,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // --- 啟動播放 ---
         bonusVideo.style.display = 'block';
         bonusVideo.play().catch(e => console.log("Autoplay blocked"));
         
