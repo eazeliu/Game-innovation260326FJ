@@ -21,7 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let bonusTimer = null;
     const friction = 0.998; 
 
-    /* 修改說明：初始化時強制重寫屬性，確保 HTML 原始設定失效 */
+    // 1. Set Limit
+    velocity = v;
+    sInput.value = Math.round(v);
+    sSlider.value = v;
     sSlider.setAttribute('min', '-720');
     sSlider.setAttribute('max', '720');
     sInput.setAttribute('min', '-720');
@@ -31,10 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let v = parseFloat(val) || 0;
         if (v > 720) v = 720;
         if (v < -720) v = -720;
-        
-        velocity = v;
-        sInput.value = Math.round(v);
-        sSlider.value = v;
     }
 
     sSlider.addEventListener('input', (e) => {
