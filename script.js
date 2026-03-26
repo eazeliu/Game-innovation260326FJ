@@ -21,10 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let bonusTimer = null;
     const friction = 0.998; 
 
-    // Helper: 統一限制並同步 UI
+    // set-default-controller
+    sSlider.min = "-720";
+    sSlider.max = "720";
+    sInput.min = "-720";
+    sInput.max = "720";
+
+    // Helper: 
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
-        // 這裡強制鎖死數值
         if (v > 720) v = 720;
         if (v < -720) v = -720;
         velocity = v;
@@ -84,10 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const deltaTime = (now - lastTime) / 1000;
         lastTime = now;
 
-        // 強制檢查：防止外部腳本篡改 HTML 屬性
-        if (sSlider.max !== "720") sSlider.max = "720";
-        if (sSlider.min !== "-720") sSlider.min = "-720";
-
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
             outer.style.transform = `rotate(${currentAngle}deg)`;
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(update);
 
-    // 6. Bonus 關閉邏輯封裝
+    // 6. Bonus 
     function closeBonus() {
         bonusVideo.style.opacity = "0";
         bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
@@ -142,19 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             bonusTrigger.innerText = "BONUS";
             bonusTrigger.style.background = "#28a745";
-        }, 1000); // 對應 1 秒 fade out
+        }, 1000); 
     }
 
     // 7. Bonus-trigger
     bonusTrigger.onclick = () => {
-        // 如果已經在跑，按一下就關閉
         if (bonusVideo.classList.contains('active')) {
             if (bonusTimer) clearTimeout(bonusTimer);
             closeBonus();
             return;
         }
-
-        // --- 啟動播放 ---
         bonusVideo.style.display = 'block';
         bonusVideo.play().catch(e => console.log("Autoplay blocked"));
         
@@ -163,8 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             v.play().catch(e => console.log("Assign video blocked"));
             setTimeout(() => v.classList.add('active'), 10);
         });
-
-        // 1秒 Fade In 並置中縮放
+        
         setTimeout(() => {
             bonusVideo.classList.add('active');
             bonusVideo.style.opacity = "1";
@@ -174,10 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
         bonusTrigger.innerText = "RUNNING...";
         bonusTrigger.style.background = "#ff4444";
 
-        // 設定 6 秒總時長（5秒時啟動 1秒的 fade out）
         bonusTimer = setTimeout(() => {
             closeBonus();
-        }, 5000);
+        }, 6000);
     };
 
     // FPS Detector
