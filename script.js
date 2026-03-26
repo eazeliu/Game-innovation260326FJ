@@ -17,34 +17,73 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAngle = 0;
     let velocity = 0;
     let isNested = false;
-    const friction = 0.998;
-    let lastTime = performance.now();
-    let bonusTimer = null; // 用於自動關閉計時
+    const friction = 0.998; 
 
-    // 初始化狀態
-    bonusVideo.style.display = 'none';
-    bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
-
-    // 1. UI-Slider Control
 sSlider.addEventListener('input', (e) => {
-    let val = parseFloat(e.target.value);
-    velocity = Math.min(val, 720); 
+    velocity = parseFloat(e.target.value); 
     sInput.value = Math.round(velocity); 
 });
 
-   //UI : Sync Speed from Input
 sInput.addEventListener('change', (e) => {
     let val = parseFloat(e.target.value) || 0;
-    
-    // up to 720
-    if (val > 720) {
-        val = 720;
-        sInput.value = 720;
-    }
+    if (val > 720) val = 720;
+    if (val < -720) val = -720;
     
     velocity = val;
+    sInput.value = val;
     sSlider.value = val;
 });
+
+startBtn.onclick = () => {
+    let val = parseFloat(sInput.value) || 0;
+    velocity = Math.min(Math.max(val, -720), 720);
+    sSlider.value = velocity;
+    sInput.value = velocity;
+};
+
+stopBtn.onclick = () => {
+    velocity = 0;
+    sSlider.value = 0;
+    sInput.value = 0;
+    sDisplay.innerText = 0;
+};
+
+resetBtn.onclick = () => {
+    velocity = 0;          
+    currentAngle = 0;   
+    outer.style.transform = `rotate(0deg)`;
+    inner.style.transform = `rotate(0deg)`;
+    sSlider.value = 0;
+    sInput.value = 0;
+};
+
+function update() {
+    if (Math.abs(velocity) > 0.1) {
+        velocity *= friction;
+    } else {
+        velocity = 0;
+    }
+
+    currentAngle += velocity / 60;
+
+    outer.style.transform = `rotate(${currentAngle}deg)`;
+    if (isNested) {
+        inner.style.transform = `rotate(${currentAngle}deg)`;
+    }
+
+    if (document.activeElement !== sSlider) {
+        sSlider.value = velocity;
+        sInput.value = Math.round(velocity);
+    }
+    
+    sDisplay.innerText = Math.abs(Math.round(velocity));
+
+    requestAnimationFrame(update);
+}
+
+requestAnimationFrame(update);
+
+    
 
    //Button-Click Logic (也需要更新)
 startBtn.onclick = () => {
