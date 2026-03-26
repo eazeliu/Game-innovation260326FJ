@@ -39,11 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         limitAndSync(e.target.value);
     });
 
-    // 2. UI : Sync Speed from Input
-    sInput.addEventListener('change', (e) => {
-        limitAndSync(e.target.value);
-    });
-
     // 3. Button-Click Logic
     startBtn.onclick = () => {
         limitAndSync(sInput.value);
