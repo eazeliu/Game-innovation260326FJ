@@ -17,93 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAngle = 0;
     let velocity = 0;
     let isNested = false;
+    let lastTime = performance.now();
+    let bonusTimer = null;
     const friction = 0.998; 
 
-    sSlider.addEventListener('input', (e) => {
-        velocity = parseFloat(e.target.value); 
-        sInput.value = Math.round(velocity); 
-    });
-
-    sInput.addEventListener('change', (e) => {
-        let val = parseFloat(e.target.value) || 0;
-        if (val > 720) val = 720;
-        if (val < -720) val = -720;
-        
-        velocity = val;
-        sInput.value = val;
-        sSlider.value = val;
-    });
-
-    startBtn.onclick = () => {
-        let val = parseFloat(sInput.value) || 0;
-        velocity = Math.min(Math.max(val, -720), 720);
-        sSlider.value = velocity;
-        sInput.value = velocity;
-    };
-
-    stopBtn.onclick = () => {
-        velocity = 0;
-        sSlider.value = 0;
-        sInput.value = 0;
-        sDisplay.innerText = 0;
-    };
-
-    resetBtn.onclick = () => {
-        velocity = 0;          
-        currentAngle = 0;   
-        outer.style.transform = `rotate(0deg)`;
-        inner.style.transform = `rotate(0deg)`;
-        sSlider.value = 0;
-        sInput.value = 0;
-    };
-
-    function update() {
-        if (Math.abs(velocity) > 0.1) {
-            velocity *= friction;
-        } else {
-            velocity = 0;
-        }
-
-        currentAngle += velocity / 60;
-
-        outer.style.transform = `rotate(${currentAngle}deg)`;
-        if (isNested) {
-            inner.style.transform = `rotate(${currentAngle}deg)`;
-        }
-
-        if (document.activeElement !== sSlider) {
-            sSlider.value = velocity;
-            sInput.value = Math.round(velocity);
-        }
-        
-        sDisplay.innerText = Math.abs(Math.round(velocity));
-
-        requestAnimationFrame(update);
+    // 新增：限制與同步函數
+    function syncSpeed(val) {
+        let cleanVal = Math.min(Math.max(parseFloat(val) || 0, -720), 720);
+        velocity = cleanVal;
+        sInput.value = Math.round(cleanVal);
+        sSlider.value = cleanVal;
     }
 
-    requestAnimationFrame(update);
-
-    //Button-Click Logic (也需要更新)
-    startBtn.onclick = () => {
-        let val = parseFloat(sInput.value) || 0;
-        velocity = Math.min(val, 720);
-        sSlider.value = velocity;
-        sInput.value = velocity;
-    };
+    sSlider.addEventListener('input', (e) => {
+        syncSpeed(e.target.value);
+    });
 
     // 2. UI : Sync Speed from Input
     sInput.addEventListener('change', (e) => {
-        const val = parseFloat(e.target.value) || 0;
-        velocity = val;
-        sSlider.value = val;
+        syncSpeed(e.target.value);
     });
 
     // 3. Button-Click Logic
     startBtn.onclick = () => {
-        velocity = parseFloat(sInput.value) || 0;
-        sSlider.value = velocity;
+        syncSpeed(sInput.value);
     };
-    
+
     stopBtn.onclick = () => {
         velocity = 0;
         sSlider.value = 0;
@@ -145,12 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Math.abs(velocity) > 0.01) {
             currentAngle += velocity * deltaTime;
             outer.style.transform = `rotate(${currentAngle}deg)`;
-            inner.style.transform = `rotate(${-currentAngle}deg)`;
+            
+            if (isNested) {
+                inner.style.transform = `rotate(0deg)`;
+            } else {
+                inner.style.transform = `rotate(${-currentAngle}deg)`;
+            }
+            
             velocity *= Math.pow(friction, deltaTime * 60);
             
-            sDisplay.innerText = Math.round(velocity);
-            sInput.value = Math.round(velocity);
-            sSlider.value = velocity;
+            sDisplay.innerText = Math.round(Math.abs(velocity));
+            if (document.activeElement !== sInput && document.activeElement !== sSlider) {
+                sInput.value = Math.round(velocity);
+                sSlider.value = velocity;
+            }
         } else if (velocity !== 0) {
             velocity = 0;
             sDisplay.innerText = 0;
@@ -194,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bonusTrigger.onclick = () => {
         // 如果已經在跑，按一下就關閉
         if (bonusVideo.classList.contains('active')) {
-            clearTimeout(bonusTimer);
+            if (bonusTimer) clearTimeout(bonusTimer);
             closeBonus();
             return;
         }
