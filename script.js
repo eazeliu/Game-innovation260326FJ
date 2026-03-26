@@ -26,10 +26,34 @@ document.addEventListener('DOMContentLoaded', () => {
     bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
 
     // 1. UI-Slider Control
-    sSlider.addEventListener('input', (e) => {
-        velocity = parseFloat(e.target.value);
-        sInput.value = Math.round(velocity); 
-    });
+sSlider.addEventListener('input', (e) => {
+    let val = parseFloat(e.target.value);
+    velocity = Math.min(val, 720); 
+    sInput.value = Math.round(velocity); 
+});
+
+   //UI : Sync Speed from Input
+sInput.addEventListener('change', (e) => {
+    let val = parseFloat(e.target.value) || 0;
+    
+    // up to 720
+    if (val > 720) {
+        val = 720;
+        sInput.value = 720;
+    }
+    
+    velocity = val;
+    sSlider.value = val;
+});
+
+   //Button-Click Logic (也需要更新)
+startBtn.onclick = () => {
+    let val = parseFloat(sInput.value) || 0;
+    velocity = Math.min(val, 720);
+    sSlider.value = velocity;
+    sInput.value = velocity;
+};
+
 
     // 2. UI : Sync Speed from Input
     sInput.addEventListener('change', (e) => {
