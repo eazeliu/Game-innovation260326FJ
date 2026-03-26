@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Game Show - Rotation Solution</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+          <video style="width: 100%;height:100%;position: absolute;left: 0px;top: 0px;z-index: -1;" autoplay muted loop playsinline class="inner-video">
+                <source src="./videos/main-bg.mp4" type="video/webm">
+            </video>
+
+    <div class="ui-overlay">
+        <div class="control-row">
+            speed (°/s): <input type="number" id="speedInput" value="0">
+            <button id="startBtn">SET</button>
+            <button id="stopBtn" class="btn-stop">STOP</button>
+            <button id="resetBtn" class="btn-reset">RESET</button>
+        </div>
+        
+        <div class="control-row">
+            <input type="range" id="speedSlider" min="-2000" max="2000" value="0" style="width: 100%;">
+        </div>
+
+        <div class="control-row">
+            Attach Style: <button id="nestBtn" class="btn-mode">Switch to nested</button>
+        </div>
+        <div class="control-row">
+            <div class="status-info">
+                Speed: <span id="currentSpeed">0</span> °/s <br>
+                <small id="modeText">Mode：Unnested</small>
+                <div id="fpsDiv"></div>
+            </div>
+            <div class="status-info">
+                <button id="bonusTrigger">Bonus</button>
+  
+            </div>
+        </div> 
+    </div>
+
+    <div id="canvas-container">
+        <div id="outer-wheel">
+             <div id="outer-wheel-UI">
+                 <video class="bonus-assign v-12" muted playsinline loop src="./videos/seven-effect.webm"></video>
+                 <video class="bonus-assign v-3"  muted playsinline loop src="./videos/seven-effect.webm"></video>
+                    <video class="bonus-assign v-5"  muted playsinline loop src="./videos/seven-effect.webm"></video>
+                    <video class="bonus-assign v-8"  muted playsinline loop src="./videos/seven-effect.webm"></video>
+             </div>
+        </div>
+        
+        <div id="inner-panel">
+
+            <div class="inner-content">
+                <!-- <div class="arrow">⬆️</div>-->
+                <div class="text" data-text="1000x">1000x</div>
+                <div class="mode-indicator">bonus assigned</div>
+            </div>
+
+            <video style="width: 400px;height: 400px;position: absolute;left: 100px;top: 100px;z-index: 1005;" autoplay muted loop playsinline class="inner-video">
+                <source src="./videos/wheel-loop.webm" type="video/webm">
+            </video>
+
+            <video id="bonus-bg" muted loop playsinline>
+                <source src="./videos/wheel-particle.webm" type="video/webm">
+            </video>
+            </video>
+            <video style="width: 600px;height: 600px;position: absolute;left: 0px;top: 0px;z-index: 991;" autoplay muted loop playsinline class="inner-video">
+                <source src="./videos/wheel-bg.mp4" type="video/webm">
+            </video>
+            
+ 
+        </div>
+    
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
