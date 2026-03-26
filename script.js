@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let bonusTimer = null;
     const friction = 0.998; 
 
-    // Helper: 統一限制並同步 UI
+    // Lock-RotateSpeed
     function limitAndSync(val) {
         let v = parseFloat(val) || 0;
         if (v > 720) v = 720;
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     requestAnimationFrame(update);
 
-    // 6. Bonus 關閉邏輯封裝
+    // 6. Bonus
     function closeBonus() {
         bonusVideo.style.opacity = "0";
         bonusVideo.style.transform = "translate(-50%, -50%) scale(0)";
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             bonusTrigger.innerText = "BONUS";
             bonusTrigger.style.background = "#28a745";
-        }, 1000); // 對應 1 秒 fade out
+        }, 1000);
     }
 
     // 7. Bonus-trigger
@@ -146,9 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bonusTimer) clearTimeout(bonusTimer);
             closeBonus();
             return;
-        }
-
-        bonusVideo.style.display = 'block';
+        }        bonusVideo.style.display = 'block';
         bonusVideo.play().catch(e => console.log("Autoplay blocked"));
         
         bonusAssignVideos.forEach(v => {
@@ -156,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
             v.play().catch(e => console.log("Assign video blocked"));
             setTimeout(() => v.classList.add('active'), 10);
         });
-
         setTimeout(() => {
             bonusVideo.classList.add('active');
             bonusVideo.style.opacity = "1";
@@ -165,10 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bonusTrigger.innerText = "RUNNING...";
         bonusTrigger.style.background = "#ff4444";
-
         bonusTimer = setTimeout(() => {
             closeBonus();
-        }, 5000);
+        }, 6000);
     };
 
     // FPS Detector
