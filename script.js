@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAngle = 0;
     let velocity = 0;
     let isNested = false;
-    const friction = 0.990;
+    const friction = 0.993;
     let lastTime = performance.now();
     let bonusTimer = null; // 用於自動關閉計時
 
