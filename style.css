@@ -4,15 +4,15 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 1920px;
+    width:1080px;
     color: white;
     font-family: 'Segoe UI', Arial, sans-serif;
     overflow: hidden;
-    background-image: url(".img/Main-0329-scene-general");
+    background-image: url("img/Main-0329-scene-general.png");
 
 }
 .main-container{
-    background-image: url(".img/Main-0329-scene-general");
     margin-bottom:22px;
     width:800px;
     height:800px;
