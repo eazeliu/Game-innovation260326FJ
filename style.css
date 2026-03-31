@@ -8,8 +8,9 @@ body {
     width:1080px;
     color: white;
     font-family: 'Segoe UI', Arial, sans-serif;
-    overflow: hidden;
     background-image: url("img/Main-0329-scene-general.png");
+    background-size:cover;
+    background-repeat:no-repeat;
 
 }
 .main-container{
