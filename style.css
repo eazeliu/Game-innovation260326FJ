@@ -8,14 +8,16 @@ body {
     color: white;
     font-family: 'Segoe UI', Arial, sans-serif;
     overflow: hidden;
+    background-image: url(".img/Main-0329-scene-general");
+
 }
 .main-container{
     background-image: url(".img/Main-0329-scene-general");
-    margin:0 auto;
-    width:100vw;
+    margin-bottom:22px;
+    width:800px;
+    height:800px;
     aspect-ratio: 16 / 9;
-    justify-content: center;
-    align-items: center;
+
 
 }
 /* Wheel - Container*/
@@ -28,7 +30,6 @@ body {
     border-radius: 50%;
     overflow: hidden;
     scale:0.73;
-    margin-bottom:22px;
 }
 
 /* Wheel - Outer*/
