@@ -9,7 +9,13 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     overflow: hidden;
 }
+.main-container{
+    background-image: url(".img/Main-0329-scene-general");
+    margin:0 auto;
+    width:100%;
+    aspect-ratio: 16 / 9;
 
+}
 /* Wheel - Container*/
 #canvas-container {
     position: relative;
