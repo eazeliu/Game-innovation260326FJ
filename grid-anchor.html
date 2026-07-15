@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1920×1200 Numbered Grid</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+#stage {
+    position: relative;
+    width: 1920px;
+    height: 1200px;
+    overflow: hidden;
+    background: #000;
+}
+
+#grid {
+    width: 1920px;
+    height: 1200px;
+    display: grid;
+    grid-template-columns: repeat(38, 50px) 20px;
+    grid-template-rows: repeat(24, 50px);
+}
+
+.cell {
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+#guide-circle {
+    position: absolute;
+    width: 1200px;
+    height: 1200px;
+    left: 600px;
+    top: 600px;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* 水平紅線 */
+#guide-circle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: red;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* 垂直紅線 */
+#guide-circle::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: red;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+#control-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 400px;
+    height: 100%;
+    padding: 24px 18px;
+
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    color: #fff;
+}
+
+#control-panel h2 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-label {
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-btn {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #fff;
+    color: #111;
+
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.control-input {
+    flex: 1;
+    min-width: 0;
+    height: 44px;
+    padding: 0 12px;
+
+    border: 1px solid #fff;
+    border-radius: 8px;
+
+    font-size: 18px;
+    text-align: center;
+
+    background: #fff;
+    color: #111;
+}
+
+.control-help {
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.75);
+}
+</style>
+</head>
+
+<body>
+<div id="stage">
+    <div id="grid"></div>
+    <div id="guide-circle"></div>
+
+    <div id="control-panel">
+        <h2>Circle Controls</h2>
+
+        <!-- 寬度比例 -->
+        <div class="control-group">
+            <label class="control-label" for="widthRatio">
+                Width ratio
+            </label>
+
+            <div class="control-row">
+                <button
+                    class="control-btn"
+                    data-target="widthRatio"
+                    data-step="-0.01"
+                >
+                    −
+                </button>
+
+                <input
+                    id="widthRatio"
+                    class="control-input"
+                    type="number"
+                    min="0.1"
+                    max="2"
+                    step="0.01"
+                    value="1"
+                >
+
+                <button
+                    class="control-btn"
+                    data-target="widthRatio"
+                    data-step="0.01"
+                >
+                    +
+                </button>
+            </div>
+        </div>
+
+        <!-- 圓形基準尺寸 -->
+        <div class="control-group">
+            <label class="control-label" for="circleSize">
+                Circle size
+            </label>
+
+            <div class="control-row">
+                <button
+                    class="control-btn"
+                    data-target="circleSize"
+                    data-step="-1"
+                >
+                    −
+                </button>
+
+                <input
+                    id="circleSize"
+                    class="control-input"
+                    type="number"
+                    min="0"
+                    max="1800"
+                    step="1"
+                    value="1200"
+                >
+
+                <button
+                    class="control-btn"
+                    data-target="circleSize"
+                    data-step="1"
+                >
+                    +
+                </button>
+            </div>
+        </div>
+
+        <!-- X 座標 -->
+        <div class="control-group">
+            <label class="control-label" for="xPosition">
+                X position
+            </label>
+
+            <div class="control-row">
+                <button
+                    class="control-btn"
+                    data-target="xPosition"
+                    data-step="-1"
+                >
+                    −
+                </button>
+
+                <input
+                    id="xPosition"
+                    class="control-input"
+                    type="number"
+                    min="0"
+                    max="1920"
+                    step="1"
+                    value="600"
+                >
+
+                <button
+                    class="control-btn"
+                    data-target="xPosition"
+                    data-step="1"
+                >
+                    +
+                </button>
+            </div>
+        </div>
+
+        <!-- Y 座標 -->
+        <div class="control-group">
+            <label class="control-label" for="yPosition">
+                Y position
+            </label>
+
+            <div class="control-row">
+                <button
+                    class="control-btn"
+                    data-target="yPosition"
+                    data-step="-1"
+                >
+                    −
+                </button>
+
+                <input
+                    id="yPosition"
+                    class="control-input"
+                    type="number"
+                    min="0"
+                    max="1200"
+                    step="1"
+                    value="600"
+                >
+
+                <button
+                    class="control-btn"
+                    data-target="yPosition"
+                    data-step="1"
+                >
+                    +
+                </button>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+
+<script>
+const grid = document.getElementById("grid");
+const circle = document.getElementById("guide-circle");
+
+const inputs = {
+    widthRatio: document.getElementById("widthRatio"),
+    circleSize: document.getElementById("circleSize"),
+    xPosition: document.getElementById("xPosition"),
+    yPosition: document.getElementById("yPosition")
+};
+
+const limits = {
+    widthRatio: {
+        min: 0.1,
+        max: 2
+    },
+    circleSize: {
+        min: 0,
+        max: 1800
+    },
+    xPosition: {
+        min: 0,
+        max: 1920
+    },
+    yPosition: {
+        min: 0,
+        max: 1200
+    }
+};
+
+function clampValue(inputName, value) {
+    const limit = limits[inputName];
+
+    if (!limit) {
+        return value;
+    }
+
+    return Math.max(
+        limit.min,
+        Math.min(limit.max, value)
+    );
+}
+
+function getInputValue(inputName) {
+    const input = inputs[inputName];
+
+    if (inputName === "widthRatio") {
+        return parseFloat(input.value) || 1;
+    }
+
+    return parseInt(input.value, 10) || 0;
+}
+
+function updateCircle() {
+    const widthRatio = clampValue(
+        "widthRatio",
+        getInputValue("widthRatio")
+    );
+
+    const size = clampValue(
+        "circleSize",
+        getInputValue("circleSize")
+    );
+
+    const x = clampValue(
+        "xPosition",
+        getInputValue("xPosition")
+    );
+
+    const y = clampValue(
+        "yPosition",
+        getInputValue("yPosition")
+    );
+
+    const adjustedWidth = size * widthRatio;
+
+    inputs.widthRatio.value = widthRatio.toFixed(2);
+    inputs.circleSize.value = size;
+    inputs.xPosition.value = x;
+    inputs.yPosition.value = y;
+
+    circle.style.width = `${adjustedWidth}px`;
+    circle.style.height = `${size}px`;
+    circle.style.left = `${x}px`;
+    circle.style.top = `${y}px`;
+    circle.style.transform = "translate(-50%, -50%)";
+}
+
+for (const button of document.querySelectorAll(".control-btn")) {
+    button.addEventListener("click", () => {
+        const target = button.dataset.target;
+        const step = parseFloat(button.dataset.step) || 0;
+        const input = inputs[target];
+
+        if (!input) {
+            return;
+        }
+
+        const currentValue = getInputValue(target);
+        const newValue = clampValue(
+            target,
+            currentValue + step
+        );
+
+        if (target === "widthRatio") {
+            input.value = newValue.toFixed(2);
+        } else {
+            input.value = Math.round(newValue);
+        }
+
+        updateCircle();
+    });
+}
+
+for (const input of Object.values(inputs)) {
+    input.addEventListener("input", updateCircle);
+    input.addEventListener("change", updateCircle);
+}
+
+const cols = 39;
+const rows = 24;
+
+for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+        const cell = document.createElement("div");
+
+        cell.className = "cell";
+        cell.textContent = `${x},${y}`;
+
+        grid.appendChild(cell);
+    }
+}
+
+updateCircle();
+</script>
+</body>
+</html>
