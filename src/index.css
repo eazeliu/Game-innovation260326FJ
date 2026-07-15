@@ -119,3 +119,35 @@ body {
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.75);
 }
+
+.back-link {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 20;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.home-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  background: #000;
+}
+
+.home-link {
+  color: #fff;
+  text-decoration: none;
+  background: #1e88e5;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
