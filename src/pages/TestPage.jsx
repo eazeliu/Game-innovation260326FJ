@@ -197,9 +197,11 @@ export default function TestPage() {
         ← 進入 Grid Anchor
       </Link>
 
-      <video className="main-bg-video" autoPlay muted loop playsInline>
+    {/*
+    <video className="main-bg-video" autoPlay muted loop playsInline>
         <source src={mainBgVideo} type="video/mp4" />
       </video>
+      */}
 
       <div className="ui-overlay">
         <div className="control-row">
